@@ -1,7 +1,10 @@
+// Generated on <%%= (new Date).toISOString().split('T')[0] %> using <%%= pkg.name %> <%%= pkg.version %>
+'use strict';
+
 module.exports = function(grunt) {
+
     var pkg = grunt.file.readJSON( __dirname +'/package.json');
     var path = require('path');
-
 
     // Project configuration.
     grunt.initConfig({
@@ -12,14 +15,19 @@ module.exports = function(grunt) {
          * Set up the project environment
          */
         paths: {
-            javascript: "site/assets/js",
-            minifiedJavascript: "site/assets/js/dist/"
+            site: '<%= sitePath %>',
+            assets: '<%= sitePath %>/assets',
+            javascript: "<%= sitePath %>/assets/js",
+            minifiedJavascript: "<%= sitePath %>/assets/js/dist/"
         },
 
         /**
          * Concat
          */
         concat: {
+            js: {
+
+            },
             static_mappings: {
                 // files: require("./build.json")
             }
@@ -29,10 +37,13 @@ module.exports = function(grunt) {
          * Blast generated CSS and JS files.
          */
         clean: {
-            javascript: [
-                "<%= paths.minifiedJavascript %>/**/*.js",
-                "!<%= paths.minifiedJavascript %>/.svn"
-            ]
+            js: {
+                javascript: [
+                    "<%%= paths.minifiedJavascript %>/**/*.js",
+                    "!<%%= paths.minifiedJavascript %>/.svn"
+                ]
+            },
+            server: '.tmp'
         },
 
         /**
@@ -40,7 +51,7 @@ module.exports = function(grunt) {
          */
         uglify: {
             options: {
-                banner: "/*! <%= pkg.name %> <%= grunt.template.today(\"yyyy-mm-dd\") %> */\n",
+                banner: "/*! <%%= pkg.name %> <%%= grunt.template.today(\"yyyy-mm-dd\") %> */\n",
                 mangle: {
                     except: ["jQuery", "Backbone"]
                 },
@@ -48,8 +59,8 @@ module.exports = function(grunt) {
                     {
                         expand: true,
                         flatten: true,   // remove all unnecessary nesting
-                        src: "<%= paths.minifiedJavascript %>/*.js",  // source files mask
-                        dest: "<%= paths.minifiedJavascript %>",    // destination folder
+                        src: "<%%= paths.minifiedJavascript %>/*.js",  // source files mask
+                        dest: "<%%= paths.minifiedJavascript %>",    // destination folder
                         ext: '.js'   // replace .js to .min.js
                     }
                 ]
@@ -59,13 +70,13 @@ module.exports = function(grunt) {
                     beautify: true
 
                 },
-                files: "<%= uglify.options.files %>"
+                files: "<%%= uglify.options.files %>"
             },
             dist: {
                 options: {
                     beautify: false
                 },
-                files: "<%= uglify.options.files %>"
+                files: "<%%= uglify.options.files %>"
             }
         },
 
@@ -86,15 +97,15 @@ module.exports = function(grunt) {
                 //'-W061': true,  // Eval can be harmful -
                 //'-W083': true,   // Don't make functions within a loop
                 ignores: [
-                    "<%= paths.minifiedJavascript %>**/*.js",
-                    "<%= paths.javascript %>/lib/**/*.js",
+                    "<%%= paths.minifiedJavascript %>**/*.js",
+                    "<%%= paths.javascript %>/lib/**/*.js",
                     "/**/*.min.js",
                     "/**/*.mini.js",
                     "/**/jquery.js",
                     "/**/jquery.*.js"
                 ]
             },
-            all: ['<%= paths.javascript %>/**/*.js']
+            all: ['<%%= paths.javascript %>/**/*.js']
         },
 
         /**
@@ -112,7 +123,7 @@ module.exports = function(grunt) {
                         expand: true,
                         cwd: 'bower_components',
                         src: ['**/*.js'],
-                        dest: 'site/assets/js/lib',
+                        dest: '<%%= paths.assets %>/js/lib',
                         rename: function(dest, matchedSrcPath, options) {
                             var newSourcePath = matchedSrcPath.replace(/(\/js\/)|(\/javascripts\/)/,"/");
                             return path.join(dest, newSourcePath);
@@ -122,7 +133,7 @@ module.exports = function(grunt) {
                         expand: true,
                         cwd: 'bower_components',
                         src: ['**/*.css'],
-                        dest: 'site/assets/css/lib',
+                        dest: '<%%= paths.assets %>/css/lib',
                         rename: function(dest, matchedSrcPath, options) {
                             var newSourcePath = matchedSrcPath.replace(/(\/css\/)|(\/stylesheets\/)/,"/");
                             return path.join(dest, newSourcePath);
@@ -133,7 +144,7 @@ module.exports = function(grunt) {
                         expand: true,
                         cwd: 'bower_components',
                         src: ['**/*.scss'],
-                        dest: 'site/assets/sass/lib',
+                        dest: '<%%= paths.assets %>/sass/lib',
                         rename: function(dest, matchedSrcPath, options) {
                             var newSourcePath = matchedSrcPath.replace(/(\/sass\/)|(\/scss\/)/,"/");
                             return path.join(dest, newSourcePath);
@@ -143,15 +154,14 @@ module.exports = function(grunt) {
             }
         },
 
-
         sass: {
             dist: {
                 files: [
                     {
                         expand: true,     // Enable dynamic expansion.
-                        cwd: 'site/assets/sass/',      // Src matches are relative to this path.
+                        cwd: '<%%= paths.assets %>/sass/',      // Src matches are relative to this path.
                         src: ['**/*.scss', "!**/_*.scss"], // Actual pattern(s) to match.
-                        dest: 'site/assets/css/',   // Destination path prefix.
+                        dest: '<%%= paths.assets %>/css/',   // Destination path prefix.
                         ext: '.css'   // Dest filepaths will have this extension.
                     }
                 ]
@@ -163,46 +173,35 @@ module.exports = function(grunt) {
          * Watch
          */
         watch: {
-            watch: {
-                css: {
-                    files: 'www/assets/sass/**/*.scss',
-                    tasks: ['sass'],
-                    options: {
-                        livereload: true,
-                        atBegin: true
-                        // port: 9000,
-                        // key: grunt.file.read('path/to/ssl.key'),
-                        // cert: grunt.file.read('path/to/ssl.crt')
-                        // you can pass in any other options you'd like to the https server, as listed here: http://nodejs.org/api/tls.html#tls_tls_createserver_options_secureconnectionlistener
-                        // }
-                    },
+
+            css: {
+                files: '<%%= paths.assets %>/sass/{,*/}*.scss',
+                tasks: ['sass', 'compass:server']
+            },
+
+            js: {
+                files: [
+                    "<%%= paths.javascript %>/{,*/}*.js",
+                    "!<%%= paths.javascript %>/dist/*.js"
+                ],
+                tasks: ['js', 'compass:server']
+            },
+
+            livereload: {
+                options: {
+                    livereload: 35729
                 },
-                templates: {
-                    files: ['content/**/*.json', 'templates/**/*.j2'],
-                    tasks: ['template'],
-                    options: {
-                        livereload: true,
-                        atBegin: true
-                        // port: 9000,
-                        // key: grunt.file.read('path/to/ssl.key'),
-                        // cert: grunt.file.read('path/to/ssl.crt')
-                        // you can pass in any other options you'd like to the https server, as listed here: http://nodejs.org/api/tls.html#tls_tls_createserver_options_secureconnectionlistener
-                        // }
-                    }
-                },
-                js: {
-                    files: [
-                        "<%= paths.javascript %>/**/*.js",
-                        "!<%= paths.javascript %>/dist/*.js"
-                    ],
-                    tasks: ['js'],
-                    options: {
-                        livereload: true,
-                        atBegin: true
-                    }
-                }
+                files: [
+                    '<%%= paths.site %>/*.html',
+                    '.tmp/styles/{,*/}*.css',
+                    '{.tmp,<%%= paths.javascript %>}/{,*/}*.js',
+                    '<%%= paths.assets %>/images/{,*/}*.{gif,jpeg,jpg,png,svg,webp}'
+                ]
             }
+
         }
+
+
     });
 
     /**
@@ -217,14 +216,15 @@ module.exports = function(grunt) {
      * Register all the tasks
      * --------------------------------------------------------------------
      */
-        // Grunting runs the Compass task by default
+
+
+    // Grunting runs the Compass task by default
     grunt.registerTask("js", [
-        "clean:javascript",
+        "clean:js",
         "jshint",
-        "concat",
+        "concat:js",
         "uglify:dist"
     ]);
-
 
 
     grunt.registerTask("default", [
@@ -237,4 +237,5 @@ module.exports = function(grunt) {
     grunt.registerTask("bower", [
         "copy:bower"
     ]);
+
 };

@@ -87,11 +87,16 @@ FrontendGenerator.prototype.askFor = function askFor() {
 
 // Relative to user's root directory
 FrontendGenerator.prototype.app = function app() {
-    var sitePath = "www";
-    var assetPath = "www/assets";
+
+    this.sitePath = "www";
+    this.assetPath = this.sitePath + "/assets";
+
+    if (this.isYak) {
+        this.sitePath = "site";
+        this.assetPath = this.sitePath + "/assets";
+    }
 
     var packageDependencies = [
-        "jquery",
         "browser.js",
         "springload-analytics.js"
     ];
@@ -105,35 +110,28 @@ FrontendGenerator.prototype.app = function app() {
     if (this.requireFancy)
         packageDependencies.push("FancyInputs");
 
-
-    if (this.isYak) {
-        sitePath = "site/";
-        assetPath = sitePath + "/assets";
-    }
-
-
     // do something here...
-    this.mkdir(sitePath + 'templates');
-    this.mkdir(assetPath);
-    this.mkdir(assetPath + '/sass');
-    this.mkdir(assetPath + '/css');
-    this.mkdir(assetPath + '/images');
+    this.mkdir(this.sitePath);
+    this.mkdir(this.sitePath + '/templates');
 
     if (this.requireRambo) {
-        this.mkdir('site/assets/images/sprites');
+        this.mkdir(this.sitePath + '/assets/images/sprites');
     }
 
+    this.mkdir(this.assetPath);
+    this.mkdir(this.assetPath + '/sass');
+    this.mkdir(this.assetPath + '/js');
+    this.mkdir(this.assetPath + '/css');
+    this.mkdir(this.assetPath + '/images');
 
-    this.mkdir('site/assets/js');
-    this.mkdir('www');
     this.mkdir('test');
 
     this.template('basic.js', 'test/basic.js');
 
-    this.copy('Gruntfile.js', 'Gruntfile.js');
+    this.template('Gruntfile.js');
 
     this.template('_README.md', 'README.md');
-    this.template('index.html', 'site/index.html');
+    this.template('index.html', this.sitePath + '/index.html');
     this.template('_bower.json', 'bower.json');
     this.template('_package.json', 'package.json');
 //    this.template('karma.conf.js', 'karma.conf.js');
