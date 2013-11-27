@@ -1,4 +1,4 @@
-# generator-frontend [![Build Status](https://secure.travis-ci.org/JoshBarr/generator-frontend.png?branch=master)](https://travis-ci.org/JoshBarr/generator-frontend)
+# generator-springload-frontend [![Build Status](https://secure.travis-ci.org/JoshBarr/generator-frontend.png?branch=master)](https://travis-ci.org/JoshBarr/generator-frontend)
 
 A generator for [Yeoman](http://yeoman.io).
 

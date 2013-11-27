@@ -1,21 +1,21 @@
 {
-  "name": "generator-frontend",
+  "name": "generator-springload-frontend",
   "version": "0.0.0",
-  "description": "A generator for Yeoman",
+  "description": "A generator for project front-ends",
   "keywords": [
     "yeoman-generator"
   ],
-  "homepage": "https://github.com/JoshBarr/generator-frontend",
-  "bugs": "https://github.com/JoshBarr/generator-frontend/issues",
+  "homepage": "https://github.com/springload/generator-springload-frontend",
+  "bugs": "https://github.com/springload/generator-springload-frontend/issues",
   "author": {
     "name": "",
     "email": "",
-    "url": "https://github.com/JoshBarr"
+    "url": "https://github.com/springload/"
   },
   "main": "app/index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/JoshBarr/generator-frontend.git"
+    "url": "git://github.com/springload/generator-springload-frontend.git"
   },
   "scripts": {
     "test": "mocha"
