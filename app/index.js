@@ -177,8 +177,7 @@ FrontendGenerator.prototype.misc = function misc() {
 
 FrontendGenerator.prototype.bowerDependencies = function bowerDependencies() {
     var packageDependencies = [
-        "browser.js",
-        "springload-analytics.js"
+        "browser.js"
     ];
 
     if (this.requireFred)
