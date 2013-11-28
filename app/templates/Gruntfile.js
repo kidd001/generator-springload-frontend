@@ -144,7 +144,7 @@ module.exports = function(grunt) {
          * Copy Bower dependencies
          */
         copy: {
-            main: {
+            bower: {
 
             }
         },
@@ -165,20 +165,85 @@ module.exports = function(grunt) {
 
         crawl: {
             css: {
-                paths: ["<%%= paths.assets %>/css/lib/**/*.css"],
-                output: "<%%= paths.assets %>/css/cssassets.md"
+                paths: ["<%%= paths.css %>/lib/**/*.css"],
+                output: "<%%= paths.css %>/css-assets.md"
+            },
+            sass: {
+                paths: ["<%%= paths.sass %>/lib/**/*.scss"],
+                output: "<%%= paths.sass %>/scss-assets.md"
             }
         },
 
+        shell: {
+            bowerInstall: {
+                command: "bower list --paths",
+                options: {
+                    callback: function log(err, stdout, stderr, cb) {
+                        var output = JSON.parse(stdout);
 
-        exec: {
+                        var getOutput = function(path) {
+
+                            var fileType = path.split('.').pop();
+                            var dest = grunt.config("paths.assets") + "/lib";
+
+                            switch(fileType) {
+                                case "js":
+                                    dest = grunt.config("paths.javascript");
+                                    break;
+                                case "css":
+                                    dest = grunt.config("paths.css");
+                                    break;
+                                case "scss":
+                                    dest = grunt.config("paths.sass");
+                                    break;
+                            }
+
+                            var filename = /([^\/]+)$/.exec(path)[1];
+
+                            return {
+                                src: path,
+                                dest: dest + '/lib/' + filename
+                            };
+                        };
+
+                        var fileList = [];
+
+                        if ( grunt.util.kindOf(output) === "object") {
+                            for (var key in output) {
+                                var path = output[key];
+                                if (typeof(path) === "object") {
+                                    for (var i = 0; i < path.length; i++) {
+                                        if (grunt.file.isFile(path[i])) {
+                                            fileList.push(getOutput(path[i]));
+                                        }
+                                    }
+                                } else {
+                                    if (grunt.file.isFile(path)) {
+                                        fileList.push(getOutput(path));
+                                    }
+                                }
+                            }
+                        } else {
+                            return true;
+                        }
+
+                        for (var n = 0; n < fileList.length; n++) {
+                            var item = fileList[n];
+                            grunt.file.copy(item.src, item.dest);
+                            grunt.log.writeln(item.dest);
+                        }
+
+                        cb();
+                    }
+                }
+            },
+
             <% if (requireRambo) { %>
             sprites: {
                 command: "rambo --input <%%= paths.sprites %> --output <%%= paths.images %> --csspath <%%= paths.css %> --sasspath <%%= paths.sass %>/sprites --cssfile _sprites.scss --testpage_dir <%%= paths.assets %> --testpage_name sprite_test_page.html",
             }
             <% } %>
         },
-
 
 
         /**
@@ -188,7 +253,11 @@ module.exports = function(grunt) {
 
             css: {
                 files: '<%%= paths.assets %>/sass/{,*/}*.scss',
-                tasks: ['sass']
+                tasks: ['sass'],
+                options: {
+                    livereload: true,
+                    atBegin: true
+                }
             },
 
             js: {
@@ -196,7 +265,22 @@ module.exports = function(grunt) {
                     "<%%= paths.javascript %>/{,*/}*.js",
                     "!<%%= paths.javascript %>/dist/*.js"
                 ],
-                tasks: ['js']
+                tasks: ['js'],
+                options: {
+                    livereload: true,
+                    atBegin: true
+                }
+            },
+
+            sprites: {
+                files: [
+                    "<%%= paths.sprites %>/**/*.png"
+                ],
+                tasks: ['sprites'],
+                options: {
+                    livereload: true,
+                    atBegin: true
+                }
             },
 
             livereload: {
@@ -242,47 +326,47 @@ module.exports = function(grunt) {
         grunt.file.write( out, contents );
     });
 
-
-    /**
-     * Register all the tasks
-     * --------------------------------------------------------------------
-     */
-
-
-    // Grunting runs the Compass task by default
-    grunt.registerTask("default", [
-        "copy:bower",
-        "sass",
-        "crawl:css",
-        "js",
-    ]);
+    // Register tasks
 
     grunt.registerTask("js", [
         "clean:js",
         "jshint",
-        "concat:js",
-        "uglify:dist"
+        "concat:js"
     ]);
 
-    grunt.registerTask("default", [
-        "sass",
-        "js"
-    grunt.registerTask("image", [
+    grunt.registerTask("images", [
         "imagemin",
         "svgmin"
     ]);
 
     var installTasks = [
+        "shell:bowerInstall",
+        "crawl",
         <% if (requireFred) { %>"subgrunt:fred",<% } %>
-        "sass",
-        "js"
+        "build"
     ];
 
     <% if (requireRambo) { %>
     grunt.registerTask("sprites", [
-        "exec:sprites"
+        "shell:sprites",
     ]);
     <% } %>
 
-    grunt.registerTask("install", installTasks) ;
+    grunt.registerTask("install", installTasks);
+
+
+    grunt.registerTask("default", [
+        "sass",
+        "js"
+    ]);
+
+    grunt.registerTask("build", [
+        "sprites",
+        "images",
+        "sass",
+        "js",
+        "uglify:dist"
+    ]);
+
 };
+

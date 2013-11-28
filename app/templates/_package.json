@@ -12,7 +12,7 @@
   	"grunt-contrib-jshint": "*",
   	"grunt-contrib-concat": "*",
   	"grunt-contrib-watch": "*",
-    "grunt-exec": "*",
+    "grunt-shell": "*",
     "grunt-subgrunt-io": "*",
     "grunt-bower-concat": "*"
   }
