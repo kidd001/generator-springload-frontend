@@ -48,9 +48,21 @@ FrontendGenerator.prototype.askFor = function askFor() {
         },
         {
             type: 'confirm',
-            name: 'needUnderscore',
-            message: 'Add Underscore?',
+            name: 'needAnalytics',
+            message: 'Add Analytics?',
             default: true
+        },
+        {
+            type: 'confirm',
+            name: 'needShowHide',
+            message: 'Add ShowHide?',
+            default: false
+        },
+        {
+            type: 'confirm',
+            name: 'needTeflon',
+            message: 'Add Teflon?',
+            default: false
         },
         {
             type: 'confirm',
@@ -66,6 +78,12 @@ FrontendGenerator.prototype.askFor = function askFor() {
         },
         {
             type: 'confirm',
+            name: 'needQT',
+            message: 'Add QuickTube.js?',
+            default: false
+        },
+        {
+            type: 'confirm',
             name: 'needRambo',
             message: 'What about some CSS spriting?',
             default: true
@@ -75,10 +93,13 @@ FrontendGenerator.prototype.askFor = function askFor() {
     this.prompt(prompts, function (props) {
         this.siteName = props.siteName;
         this.requireFred = props.needFred;
-        this.requireUnderscore = props.needUnderscore;
         this.requireOMQ = props.needOmq;
         this.requireRambo = props.needRambo;
         this.requireFancy = props.needFancy;
+        this.requireTeflon = props.needTeflon;
+        this.requireShowHide = props.needShowHide;
+        this.requireAnalytics = props.needAnalytics;
+        this.requireQuickTube = props.needQT;
         this.isYak = props.isYak;
         this.nameSpace = props.nameSpace;
 
@@ -124,7 +145,6 @@ FrontendGenerator.prototype.yakSite = function yakSite() {
         this.templatePath = this.sitePath + '/templates';
         this.mkdir(this.templatePath);
         this.template('index.html', this.templatePath + '/template.twig');
-        this.copy('macros.twig', this.templatePath + '/macros.twig');
     }
 };
 
@@ -164,10 +184,17 @@ FrontendGenerator.prototype.bowerDependencies = function bowerDependencies() {
         packageDependencies.push("fred");
     if (this.requireOMQ)
         packageDependencies.push("on-media-query");
-    if (this.requireUnderscore)
-        packageDependencies.push("underscore");
     if (this.requireFancy)
         packageDependencies.push("FancyInputs");
+    if (this.requireAnalytics)
+        packageDependencies.push("springload-analytics.js");
+    if (this.requireTeflon)
+        packageDependencies.push("teflon.js");
+    if (this.requireShowHide)
+        packageDependencies.push("springload-showhide.js");
+    if (this.requireQuickTube)
+        packageDependencies.push("quicktube.js");
+
     this.bowerInstall(packageDependencies, {
         save: true
     });

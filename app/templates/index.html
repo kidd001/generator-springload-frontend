@@ -1,4 +1,5 @@
-<% if (isYak) { %>{% include "macros.twig" as macros %}
+<% if (isYak) { %>{% import "macros.twig" as macros %}
+
 <% } %><!DOCTYPE html>
 <!--[if lt IE 7]> <html class="ie6 no-js" lang="en"><![endif]-->
 <!--[if IE 7]> <html class="ie7 no-js" lang="en"><![endif]-->
@@ -58,18 +59,14 @@
 
 </head>
 <body>
+
+<% if (isYak) { %>{% block content %}<% } %>
 <h1><%= siteName %></h1>
-
 <p>Hey, it works!</p>
-
-<% if (isYak) { %>{{ macros.hello_world }}
-{% block content %}
-{% endblock %}
-<% } %>
+<% if (isYak) { %>{% endblock %}<% } %>
 
 <!-- scripts -->
 <script src="<%= jsPath %>/site.js"></script>
-<% if (isYak) { %>{% block scripts %}{% endblock %}<% } %>
 <% if (isYak) { %>{% if yk.debug %}<% } %>
 <script src="//localhost:35729/livereload.js"></script>
 <% if (isYak) { %>{% endif %}<% } %>
