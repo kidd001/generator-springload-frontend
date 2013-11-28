@@ -175,31 +175,6 @@ FrontendGenerator.prototype.misc = function misc() {
     }
 };
 
-FrontendGenerator.prototype.bowerDependencies = function bowerDependencies() {
-    var packageDependencies = [
-        "browser.js"
-    ];
-
-    if (this.requireFred)
-        packageDependencies.push("fred");
-    if (this.requireOMQ)
-        packageDependencies.push("on-media-query");
-    if (this.requireFancy)
-        packageDependencies.push("FancyInputs");
-    if (this.requireAnalytics)
-        packageDependencies.push("springload-analytics.js");
-    if (this.requireTeflon)
-        packageDependencies.push("teflon.js");
-    if (this.requireShowHide)
-        packageDependencies.push("springload-showhide.js");
-    if (this.requireQuickTube)
-        packageDependencies.push("quicktube.js");
-
-    this.bowerInstall(packageDependencies, {
-        save: true
-    });
-};
-
 FrontendGenerator.prototype.scripts = function scripts() {
     this.template('_site.js', this.jsPath + '/site.js');
 };
@@ -208,7 +183,6 @@ FrontendGenerator.prototype.testSuite = function testSuite() {
     this.mkdir('test');
     this.template('basic.js', 'test/basic.js');
 };
-
 
 FrontendGenerator.prototype.projectfiles = function projectfiles() {
     this.copy('editorconfig', '.editorconfig');

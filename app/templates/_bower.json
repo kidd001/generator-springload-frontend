@@ -1,5 +1,15 @@
 {
-  "name": "<%= _.slugify(siteName) %>",
-  "version": "0.0.0"
+    "name": "<%= _.slugify(siteName) %>",
+    "version": "0.0.0",
+    "dependencies": {
+        "browser.js":"*"
+<% if (requireFred) {%>,"fred":"*"
+<%}%><% if (requireOMQ) {%> ,"on-media-query":"*"
+<%}%><% if (requireFancy) {%>,"FancyInputs":"*"
+<%}%><% if (requireAnalytics) {%>,"springload-analytics.js":"*"
+<%}%><% if (requireTeflon) {%>,"teflon.js":"*"
+<%}%><% if (requireShowHide) {%>,"springload-showhide.js":"*"
+<%}%><% if (requireQuickTube) {%>,"quicktube.js":"*"<%}%>
+    }
 }
 
