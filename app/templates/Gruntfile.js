@@ -114,43 +114,6 @@ module.exports = function(grunt) {
         copy: {
             main: {
 
-            },
-            // Copies our bower dependencies to the assets directories
-            bower: {
-                files: [
-                    // includes files within path
-                    {
-                        expand: true,
-                        cwd: 'bower_components',
-                        src: ['**/*.js'],
-                        dest: '<%%= paths.assets %>/js/lib',
-                        rename: function(dest, matchedSrcPath, options) {
-                            var newSourcePath = matchedSrcPath.replace(/(\/js\/)|(\/javascripts\/)/,"/");
-                            return path.join(dest, newSourcePath);
-                        }
-                    },
-                    {
-                        expand: true,
-                        cwd: 'bower_components',
-                        src: ['**/*.css'],
-                        dest: '<%%= paths.assets %>/css/lib',
-                        rename: function(dest, matchedSrcPath, options) {
-                            var newSourcePath = matchedSrcPath.replace(/(\/css\/)|(\/stylesheets\/)/,"/");
-                            return path.join(dest, newSourcePath);
-                        }
-
-                    },
-                    {
-                        expand: true,
-                        cwd: 'bower_components',
-                        src: ['**/*.scss'],
-                        dest: '<%%= paths.assets %>/sass/lib',
-                        rename: function(dest, matchedSrcPath, options) {
-                            var newSourcePath = matchedSrcPath.replace(/(\/sass\/)|(\/scss\/)/,"/");
-                            return path.join(dest, newSourcePath);
-                        }
-                    }
-                ]
             }
         },
 
@@ -198,9 +161,17 @@ module.exports = function(grunt) {
                     '<%%= paths.assets %>/images/{,*/}*.{gif,jpeg,jpg,png,svg,webp}'
                 ]
             }
+        },
 
+
+        subgrunt: {
+            fred: {
+                projects: {
+                    // For each of these projects, the specified grunt task will be executed:
+                    'bower_components/fred': 'default'
+                }
+            }
         }
-
 
     });
 
@@ -218,7 +189,6 @@ module.exports = function(grunt) {
      */
 
 
-    // Grunting runs the Compass task by default
     grunt.registerTask("js", [
         "clean:js",
         "jshint",
@@ -228,14 +198,16 @@ module.exports = function(grunt) {
 
 
     grunt.registerTask("default", [
-        "copy:bower",
         "sass",
-        "js",
+        "js"
     ]);
 
-    // Thin wrapper for better semantics
-    grunt.registerTask("bower", [
-        "copy:bower"
-    ]);
 
+    var installTasks = [
+        <% if (fred) { %>"subgrunt:fred",<% } %>
+        "sass",
+        "js"
+    ];
+
+    grunt.registerTask("install", installTasks) ;
 };
