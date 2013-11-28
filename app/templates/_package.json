@@ -10,6 +10,7 @@
   	"grunt-contrib-jshint": "*",
   	"grunt-contrib-concat": "*",
   	"grunt-contrib-watch": "*",
-    "grunt-exec": "*"
+    "grunt-exec": "*",
+    "grunt-subgrunt-io": "*"
   }
 }

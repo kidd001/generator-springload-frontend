@@ -17,8 +17,12 @@ module.exports = function(grunt) {
         paths: {
             site: '<%= sitePath %>',
             assets: '<%= sitePath %>/assets',
-            javascript: "<%= sitePath %>/assets/js",
-            minifiedJavascript: "<%= sitePath %>/assets/js/dist/"
+            javascript: "<%= jsPath %>",
+            minifiedJavascript: "<%= jsPath %>/dist/",
+            sprites: "<%= spritePath %>",
+            images: "<%= imgPath %>",
+            css: "<%= cssPath %>",
+            sass: "<%= sassPath %>"
         },
 
         /**
@@ -53,7 +57,7 @@ module.exports = function(grunt) {
             options: {
                 banner: "/*! <%%= pkg.name %> <%%= grunt.template.today(\"yyyy-mm-dd\") %> */\n",
                 mangle: {
-                    except: ["jQuery", "Backbone"]
+                    except: ["jQuery", "Backbone", "<%= nameSpace %>"]
                 },
                 files: [
                     {
@@ -132,6 +136,16 @@ module.exports = function(grunt) {
         },
 
 
+        exec: {
+            <% if (requireRambo) { %>
+            sprites: {
+                command: "rambo --input <%%= paths.sprites %> --output <%%= paths.images %> --csspath <%%= paths.css %> --sasspath <%%= paths.sass %>/sprites --cssfile _sprites.scss --testpage_dir <%%= paths.assets %> --testpage_name sprite_test_page.html",
+            }
+            <% } %>
+        },
+
+
+
         /**
          * Watch
          */
@@ -161,9 +175,7 @@ module.exports = function(grunt) {
                     '<%%= paths.assets %>/images/{,*/}*.{gif,jpeg,jpg,png,svg,webp}'
                 ]
             }
-        },
-
-
+        }<% if (requireFred) { %>,
         subgrunt: {
             fred: {
                 projects: {
@@ -171,24 +183,15 @@ module.exports = function(grunt) {
                     'bower_components/fred': 'default'
                 }
             }
-        }
-
+        } <% } %>
     });
 
-    /**
-     * The cool way to load your grunt tasks
-     * --------------------------------------------------------------------
-     */
+    // The cool way to load your grunt tasks
     Object.keys( pkg.dependencies ).forEach( function( dep ){
         if( dep.substring( 0, 6 ) === 'grunt-' ) grunt.loadNpmTasks( dep );
     });
 
-    /**
-     * Register all the tasks
-     * --------------------------------------------------------------------
-     */
-
-
+    // Register all the tasks
     grunt.registerTask("js", [
         "clean:js",
         "jshint",
@@ -196,18 +199,22 @@ module.exports = function(grunt) {
         "uglify:dist"
     ]);
 
-
     grunt.registerTask("default", [
         "sass",
         "js"
     ]);
 
-
     var installTasks = [
-        <% if (fred) { %>"subgrunt:fred",<% } %>
+        <% if (requireFred) { %>"subgrunt:fred",<% } %>
         "sass",
         "js"
     ];
+
+    <% if (requireRambo) { %>
+    grunt.registerTask("sprites", [
+        "exec:sprites"
+    ]);
+    <% } %>
 
     grunt.registerTask("install", installTasks) ;
 };

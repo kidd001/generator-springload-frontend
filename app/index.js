@@ -29,7 +29,9 @@ FrontendGenerator.prototype.askFor = function askFor() {
             default: "website"
         },
         {
+
             name: 'isYak',
+            type: 'confirm',
             message: 'Is this a Yak site?',
             default: true
         },
@@ -77,13 +79,12 @@ FrontendGenerator.prototype.askFor = function askFor() {
         this.requireOMQ = props.needOmq;
         this.requireRambo = props.needRambo;
         this.requireFancy = props.needFancy;
-        this.requireYak = props.isYak;
+        this.isYak = props.isYak;
         this.nameSpace = props.nameSpace;
 
         cb();
     }.bind(this));
 };
-
 
 // Relative to user's root directory
 FrontendGenerator.prototype.app = function app() {
@@ -96,6 +97,64 @@ FrontendGenerator.prototype.app = function app() {
         this.assetPath = this.sitePath + "/assets";
     }
 
+    this.jsPath = this.assetPath + "/js";
+    this.cssPath = this.assetPath + "/css";
+    this.sassPath = this.assetPath + "/sass";
+    this.imgPath = this.assetPath + "/images";
+    this.spritePath = this.imgPath + "/sprites";
+};
+
+FrontendGenerator.prototype.fileStructure = function fileStructure() {
+    // do something here...
+    this.mkdir(this.sitePath);
+
+    if (this.requireRambo) {
+        this.mkdir(this.spritePath);
+    }
+
+    this.mkdir(this.assetPath);
+    this.mkdir(this.sassPath);
+    this.mkdir(this.jsPath);
+    this.mkdir(this.cssPath);
+    this.mkdir(this.imgPath);
+};
+
+FrontendGenerator.prototype.yakSite = function yakSite() {
+    if (this.isYak) {
+        this.templatePath = this.sitePath + '/templates';
+        this.mkdir(this.templatePath);
+        this.template('index.html', this.templatePath + '/template.twig');
+        this.copy('macros.twig', this.templatePath + '/macros.twig');
+    }
+};
+
+FrontendGenerator.prototype.genericSite = function genericSite() {
+    if (!this.isYak) {
+        this.isYak = "";
+        this.template('index.html', this.sitePath + '/index.html');
+    }
+};
+
+FrontendGenerator.prototype.misc = function misc() {
+    this.template('humans.txt', this.sitePath + '/humans.txt');
+    this.template('404.html', this.sitePath + '/404.html');
+
+    var miscAssets = [
+        'robots.txt',
+        'favicon.ico',
+        'apple-touch-icon-ipad.png',
+        'apple-touch-icon-ipad-retina.png',
+        'apple-touch-icon-iphone-retina.png',
+        'apple-touch-icon-precomposed.png'
+    ];
+
+    for (var i = 0; i <  miscAssets.length; i++) {
+        var asset = miscAssets[i];
+        this.copy(asset, this.sitePath + '/' + asset);
+    }
+};
+
+FrontendGenerator.prototype.bowerDependencies = function bowerDependencies() {
     var packageDependencies = [
         "browser.js",
         "springload-analytics.js"
@@ -109,40 +168,30 @@ FrontendGenerator.prototype.app = function app() {
         packageDependencies.push("underscore");
     if (this.requireFancy)
         packageDependencies.push("FancyInputs");
-
-    // do something here...
-    this.mkdir(this.sitePath);
-    this.mkdir(this.sitePath + '/templates');
-
-    if (this.requireRambo) {
-        this.mkdir(this.sitePath + '/assets/images/sprites');
-    }
-
-    this.mkdir(this.assetPath);
-    this.mkdir(this.assetPath + '/sass');
-    this.mkdir(this.assetPath + '/js');
-    this.mkdir(this.assetPath + '/css');
-    this.mkdir(this.assetPath + '/images');
-
-    this.mkdir('test');
-
-    this.template('basic.js', 'test/basic.js');
-
-    this.template('Gruntfile.js');
-
-    this.template('_README.md', 'README.md');
-    this.template('index.html', this.sitePath + '/index.html');
-    this.template('_bower.json', 'bower.json');
-    this.template('_package.json', 'package.json');
-//    this.template('karma.conf.js', 'karma.conf.js');
-
-    this.bowerInstall(packageDependencies, { save: true });
-
+    this.bowerInstall(packageDependencies, {
+        save: true
+    });
 };
+
+FrontendGenerator.prototype.scripts = function scripts() {
+    this.template('_site.js', this.jsPath + '/site.js');
+};
+
+
+FrontendGenerator.prototype.testSuite = function testSuite() {
+    this.mkdir('test');
+    this.template('basic.js', 'test/basic.js');
+};
+
 
 FrontendGenerator.prototype.projectfiles = function projectfiles() {
     this.copy('editorconfig', '.editorconfig');
     this.copy('jshintrc', '.jshintrc');
+
+    this.template('Gruntfile.js');
+    this.template('_README.md', 'README.md');
+    this.template('_bower.json', 'bower.json');
+    this.template('_package.json', 'package.json');
 };
 
 FrontendGenerator.prototype.runtime = function runtime() {
