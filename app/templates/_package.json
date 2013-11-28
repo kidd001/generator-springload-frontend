@@ -6,10 +6,13 @@
   	"grunt-sass":"*",
   	"grunt-contrib-copy": "*",
   	"grunt-contrib-clean": "*",
+    "grunt-contrib-imagemin": "*",
+    "grunt-svgmin": "*",
   	"grunt-contrib-uglify": "*",
   	"grunt-contrib-jshint": "*",
   	"grunt-contrib-concat": "*",
   	"grunt-contrib-watch": "*",
+    "grunt-bower-concat": "*",
     "grunt-exec": "*"
   }
 }

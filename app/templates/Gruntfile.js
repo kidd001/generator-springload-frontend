@@ -18,19 +18,23 @@ module.exports = function(grunt) {
             site: '<%= sitePath %>',
             assets: '<%= sitePath %>/assets',
             javascript: "<%= sitePath %>/assets/js",
-            minifiedJavascript: "<%= sitePath %>/assets/js/dist/"
+            minifiedJavascript: "<%= sitePath %>/assets/js/dist"
         },
 
         /**
          * Concat
          */
         concat: {
-            js: {
 
+            js: {
+                src: '<%%= paths.javascript %>/lib/{.*,*}/*.js',
+                dest: '<%%= paths.minifiedJavascript %>/scripts.js'
             },
+
             static_mappings: {
                 // files: require("./build.json")
             }
+
         },
 
         /**
@@ -39,11 +43,35 @@ module.exports = function(grunt) {
         clean: {
             js: {
                 javascript: [
-                    "<%%= paths.minifiedJavascript %>/**/*.js",
+                    "<%%= paths.minifiedJavascript %>/{.*,*}/*.js",
                     "!<%%= paths.minifiedJavascript %>/.svn"
                 ]
             },
             server: '.tmp'
+        },
+
+        /**
+         * Minify images and svgs
+         */
+        imagemin: {
+            dist: {
+                files: [{
+                    expand: true,
+                    cwd: '<%%= paths.assets %>/images/',
+                    src: '{,*/}*.{gif,jpeg,jpg,png}',
+                    dest: '<%%= paths.assets %>/images/'
+                }]
+            }
+        },
+        svgmin: {
+            dist: {
+                files: [{
+                    expand: true,
+                    cwd: '<%%= paths.assets %>/images/',
+                    src: '{,*/}*.svg',
+                    dest: '<%%= paths.assets %>/images/'
+                }]
+            }
         },
 
         /**
@@ -61,7 +89,7 @@ module.exports = function(grunt) {
                         flatten: true,   // remove all unnecessary nesting
                         src: "<%%= paths.minifiedJavascript %>/*.js",  // source files mask
                         dest: "<%%= paths.minifiedJavascript %>",    // destination folder
-                        ext: '.js'   // replace .js to .min.js
+                        ext: '.min.js'   // replace .js to .min.js
                     }
                 ]
             },
@@ -97,15 +125,15 @@ module.exports = function(grunt) {
                 //'-W061': true,  // Eval can be harmful -
                 //'-W083': true,   // Don't make functions within a loop
                 ignores: [
-                    "<%%= paths.minifiedJavascript %>**/*.js",
-                    "<%%= paths.javascript %>/lib/**/*.js",
+                    "<%%= paths.minifiedJavascript %>/*.js",
+                    "<%%= paths.javascript %>/lib/{.*,*}/*.js",
                     "/**/*.min.js",
                     "/**/*.mini.js",
                     "/**/jquery.js",
                     "/**/jquery.*.js"
                 ]
             },
-            all: ['<%%= paths.javascript %>/**/*.js']
+            all: ['<%%= paths.javascript %>/{.*,*}/*.js']
         },
 
         /**
@@ -168,6 +196,13 @@ module.exports = function(grunt) {
             }
         },
 
+        crawl: {
+            css: {
+                paths: ["<%%= paths.assets %>/css/lib/**/*.css"],
+                output: "<%%= paths.assets %>/css/cssassets.md"
+            }
+        },
+
 
         /**
          * Watch
@@ -176,7 +211,7 @@ module.exports = function(grunt) {
 
             css: {
                 files: '<%%= paths.assets %>/sass/{,*/}*.scss',
-                tasks: ['sass', 'compass:server']
+                tasks: ['sass']
             },
 
             js: {
@@ -184,7 +219,7 @@ module.exports = function(grunt) {
                     "<%%= paths.javascript %>/{,*/}*.js",
                     "!<%%= paths.javascript %>/dist/*.js"
                 ],
-                tasks: ['js', 'compass:server']
+                tasks: ['js']
             },
 
             livereload: {
@@ -213,12 +248,36 @@ module.exports = function(grunt) {
     });
 
     /**
+     * Creates a file with all CSS imports
+     * --------------------------------------------------------------------
+     */
+    grunt.registerMultiTask("crawl", "Create a file with all CSS assets", function() {
+        var paths = grunt.file.expand( this.data.paths ),
+            out = this.data.output,
+            contents = "", contentsCss = "", contentsCssImport = "";
+        paths.forEach(function( path ) {
+            contentsCss += '<link rel="stylesheet" type="text/css" href="' + path + '" />\n';
+            contentsCssImport += '@import url("' + path + '");\n';
+        });
+        contents += contentsCssImport + "\n\n" + contentsCss;
+        grunt.file.write( out, contents );
+    });
+
+
+    /**
      * Register all the tasks
      * --------------------------------------------------------------------
      */
 
 
     // Grunting runs the Compass task by default
+    grunt.registerTask("default", [
+        "copy:bower",
+        "sass",
+        "crawl:css",
+        "js",
+    ]);
+
     grunt.registerTask("js", [
         "clean:js",
         "jshint",
@@ -226,11 +285,9 @@ module.exports = function(grunt) {
         "uglify:dist"
     ]);
 
-
-    grunt.registerTask("default", [
-        "copy:bower",
-        "sass",
-        "js",
+    grunt.registerTask("image", [
+        "imagemin",
+        "svgmin"
     ]);
 
     // Thin wrapper for better semantics

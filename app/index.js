@@ -121,6 +121,7 @@ FrontendGenerator.prototype.app = function app() {
     this.mkdir(this.assetPath);
     this.mkdir(this.assetPath + '/sass');
     this.mkdir(this.assetPath + '/js');
+    this.mkdir(this.assetPath + '/js/dist');
     this.mkdir(this.assetPath + '/css');
     this.mkdir(this.assetPath + '/images');
 
