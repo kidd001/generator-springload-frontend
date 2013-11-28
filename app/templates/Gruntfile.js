@@ -352,12 +352,20 @@ module.exports = function(grunt) {
     ]);
     <% } %>
 
+    <% if (requireFred) { %>
+    grunt.registerTask("fred", "subgrunt:fred");
+    <% } %>
+
     grunt.registerTask("install", installTasks);
 
 
     grunt.registerTask("default", [
         "sass",
         "js"
+    ]);
+
+    grunt.registerTask("bower", [
+        "shell:bowerInstall"
     ]);
 
     grunt.registerTask("build", [
