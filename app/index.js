@@ -136,6 +136,7 @@ FrontendGenerator.prototype.fileStructure = function fileStructure() {
     this.mkdir(this.assetPath);
     this.mkdir(this.sassPath);
     this.mkdir(this.jsPath);
+    this.mkdir(this.jsPath + '/dist');
     this.mkdir(this.cssPath);
     this.mkdir(this.imgPath);
 };
@@ -203,7 +204,6 @@ FrontendGenerator.prototype.bowerDependencies = function bowerDependencies() {
 FrontendGenerator.prototype.scripts = function scripts() {
     this.template('_site.js', this.jsPath + '/site.js');
 };
-
 
 FrontendGenerator.prototype.testSuite = function testSuite() {
     this.mkdir('test');
