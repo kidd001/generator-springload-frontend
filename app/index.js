@@ -87,7 +87,7 @@ FrontendGenerator.prototype.askFor = function askFor() {
             name: 'needRambo',
             message: 'What about some CSS spriting?',
             default: true
-        },
+        }
     ];
 
     this.prompt(prompts, function (props) {

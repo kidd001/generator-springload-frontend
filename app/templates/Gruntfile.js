@@ -17,12 +17,12 @@ module.exports = function(grunt) {
         paths: {
             site: '<%= sitePath %>',
             assets: '<%= sitePath %>/assets',
-            javascript: "<%= jsPath %>",
-            minifiedJavascript: "<%= jsPath %>/dist/",
-            sprites: "<%= spritePath %>",
-            images: "<%= imgPath %>",
-            css: "<%= cssPath %>",
-            sass: "<%= sassPath %>"
+            javascript: '<%= jsPath %>',
+            minifiedJavascript: '<%= jsPath %>/dist/',
+            sprites: '<%= spritePath %>',
+            images: '<%= imgPath %>',
+            css: '<%= cssPath %>',
+            sass: '<%= sassPath %>'
         },
 
         /**
@@ -30,13 +30,14 @@ module.exports = function(grunt) {
          */
         concat: {
 
-            js: {
-                src: '<%%= paths.javascript %>/lib/{.*,*}/*.js',
-                dest: '<%%= paths.minifiedJavascript %>/scripts.js'
+            lib: {
+                src: '<%%= paths.javascript %>/lib/**/*.js',
+                dest: '<%%= paths.minifiedJavascript %>lib.js'
             },
 
             static_mappings: {
-                // files: require("./build.json")
+                src: '<%%= paths.javascript %>/site.js',
+                dest: '<%%= paths.minifiedJavascript %>site.js'
             }
 
         },
@@ -45,13 +46,16 @@ module.exports = function(grunt) {
          * Blast generated CSS and JS files.
          */
         clean: {
-            js: {
-                javascript: [
-                    "<%%= paths.minifiedJavascript %>/{.*,*}/*.js",
-                    "!<%%= paths.minifiedJavascript %>/.svn"
-                ]
-            },
-            server: '.tmp'
+            js: [
+                "<%%= paths.minifiedJavascript %>**/*.js",
+                "!<%%= paths.minifiedJavascript %>.svn"
+            ],
+            server: '.tmp',
+
+            // Expect fred to live at _fred.scss!
+            fred: [
+                "<%= sassPath %>/lib/fred.scss"
+            ]
         },
 
         /**
@@ -130,7 +134,7 @@ module.exports = function(grunt) {
                 //'-W083': true,   // Don't make functions within a loop
                 ignores: [
                     "<%%= paths.minifiedJavascript %>/*.js",
-                    "<%%= paths.javascript %>/lib/{.*,*}/*.js",
+                    "<%%= paths.javascript %>/lib/**/*.js",
                     "/**/*.min.js",
                     "/**/*.mini.js",
                     "/**/jquery.js",
@@ -331,7 +335,7 @@ module.exports = function(grunt) {
     grunt.registerTask("js", [
         "clean:js",
         "jshint",
-        "concat:js"
+        "concat"
     ]);
 
     grunt.registerTask("images", [
@@ -342,7 +346,7 @@ module.exports = function(grunt) {
     var installTasks = [
         "shell:bowerInstall",
         "crawl",
-        <% if (requireFred) { %>"subgrunt:fred",<% } %>
+        <% if (requireFred) { %>"clean:fred","subgrunt:fred",<% } %>
         "build"
     ];
 
@@ -361,7 +365,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask("default", [
         "sass",
-        "js"
+        "js:static_mappings"
     ]);
 
     grunt.registerTask("bower", [
@@ -369,6 +373,7 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask("build", [
+        "clean",
         "sprites",
         "images",
         "sass",
