@@ -1,5 +1,4 @@
 <% if (isYak) { %>{% import "macros.twig" as macros %}
-
 <% } %><!DOCTYPE html>
 <!--[if lt IE 7]> <html class="ie6 no-js" lang="en"><![endif]-->
 <!--[if IE 7]> <html class="ie7 no-js" lang="en"><![endif]-->
@@ -9,8 +8,8 @@
 <head>
     <!-- Made by Springload -->
     <meta charset="UTF-8"/>
-    <meta name='description' content='<%= siteName %>'/>
-
+    <meta name='keywords' content='<% if (isYak) { %>{{ yk.node.meta_keywords }}<% } %>'>
+    <meta name='description' content='<% if (isYak) { %>{{ yk.node.meta_description }}<% } %>'>
 
     <!-- open graph -->
     <meta property="og:url" content="" />
@@ -30,7 +29,7 @@
     <meta content="telephone=no" name="format-detection">
     <!-- end:features -->
 
-    <title><%= siteName %></title>
+    <title><% if (isYak) { %>{{ yk.node.meta_title }} - {{ yk.config.site_title }}<% } else { %><%= siteName %><% } %></title>
 
     <link type="text/plain" rel="author" href="/humans.txt" />
 
@@ -43,7 +42,7 @@
     <!-- end:icons -->
 
     <!-- styles -->
-    <link rel="stylesheet" href="<%= jsPath %>/screen.css" />
+    <link rel="stylesheet" href="<% if (isYak) { %>/<% } %>assets/css/screen.css" />
     <!-- end:styles -->
 
     <!-- js-support -->
@@ -57,6 +56,7 @@
     </script>
     <!-- end:js-support -->
 
+    <% if (isYak) { %>{{ yk.header }}<% } %>
 </head>
 <body>
 
@@ -66,11 +66,13 @@
 <% if (isYak) { %>{% endblock %}<% } %>
 
 <!-- scripts -->
-<script src="<%= jsPath %>/site.js"></script>
+<script src="<% if (isYak) { %>/<% } %>assets/js/site.js"></script>
 <% if (isYak) { %>{% if yk.debug %}<% } %>
 <script src="//localhost:35729/livereload.js"></script>
 <% if (isYak) { %>{% endif %}<% } %>
 <!-- end:scripts-->
+
+<% if (isYak) { %>{{ yk.footer }}<% } %>
 
 </body>
 </html>
