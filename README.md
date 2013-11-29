@@ -1,4 +1,4 @@
-# generator-springload-frontend [![Build Status](https://secure.travis-ci.org/springload/generator-springload-frontend.png?branch=master)](https://travis-ci.org/Springload/generator-springload-frontend)
+# generator-springload-frontend
 
 Kick off the front-end of your next project.
 
