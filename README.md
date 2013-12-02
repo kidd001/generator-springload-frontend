@@ -20,10 +20,17 @@ Finally, wire everything up with grunt
 grunt install
 ```
 
+There's a sweet, auto-reloading grunt stack set up in there too. 
+
+Call it with `grunt watch`.
+
+
+That's all folks!
+
 
 ### Updating 
 
-When we push a new version of the generator, grab it!
+When we push a new version of the generator, just call install again:
 ```
-npm update generator-springload-frontend
+npm install -g generator-springload-frontend
 ```
