@@ -17,8 +17,16 @@ yo springload-frontend
 
 Finally, wire everything up with grunt
 ```
-grunt install
+grunt bower 
 ```
+
+
+To configure FRED.scss for your project, run:
+```
+grunt fred 
+```
+and follow the instructions of your trained crew.
+
 
 There's a sweet, auto-reloading grunt stack set up in there too. 
 
